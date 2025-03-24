@@ -17,3 +17,12 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/nike.png
+    - assets/adidas.png
+    - assets/apple.png
+    - assets/google.png
+    - assets/carhartt.png
+    - assets/dog.png
+
