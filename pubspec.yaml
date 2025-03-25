@@ -19,7 +19,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/nike.png
+    - assets/Nike.png
     - assets/adidas.png
     - assets/apple.png
     - assets/google.png
