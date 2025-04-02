@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 0.1.0
 
 environment:
-  sdk: ^3.7.2
+  sdk: ">=3.5.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -17,3 +17,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/Nike.png
+    - assets/adidas.png
+    - assets/apple.png
+    - assets/google.png
+    - assets/carhartt.png
+    - assets/dog.png
