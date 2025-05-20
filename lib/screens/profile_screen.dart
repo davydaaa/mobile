@@ -1,73 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:lab_1/repositories/local_user_repository.dart';
+import 'package:lab_1/screens/login_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Дані користувача (поки що захардкоджені, без логіки)
-    const String userLogin = 'andriy_d';
-    const String userPassword = '********';
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
 
+class _ProfileScreenState extends State<ProfileScreen> {
+  String _email = 'Unknown';
+  final LocalUserRepository _userRepository = LocalUserRepository();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  void _loadUser() async {
+    final email = await _userRepository.getCurrentUserEmail();
+    setState(() {
+      _email = email ?? 'Unknown';
+    });
+  }
+
+  void _logout() async {
+    await _userRepository.logout();
+    if (!mounted) return;
+    Navigator.pushReplacement(
+      context,
+      // ignore: inference_failure_on_instance_creation
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+      appBar: AppBar(title: const Text('Profile')),
+      body: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text('Email: $_email'),
             const SizedBox(height: 20),
-            // Відображення логіна
-            const Text(
-              'Login:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text(userLogin),
-            ),
-            const SizedBox(height: 20),
-            // Відображення пароля
-            const Text(
-              'Password:',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text(userPassword),
-            ),
-            const Spacer(),
-            // Кнопка виходу
-            Center(
-              child: ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.logout),
-                label: const Text('Logout'),
-                style: ElevatedButton.styleFrom(
-                  // ignore: lines_longer_than_80_chars
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  backgroundColor: Colors.redAccent,
-                  foregroundColor: Colors.white,
-                  // ignore: lines_longer_than_80_chars
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
+            ElevatedButton(onPressed: _logout, child: const Text('Logout')),
           ],
         ),
       ),
