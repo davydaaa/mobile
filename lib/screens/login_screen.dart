@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lab_1/repositories/local_user_repository.dart';
-import 'package:lab_1/screens/home_screen.dart';
-import 'package:lab_1/screens/register_screen.dart';
+import '../services/auth_service.dart';
+import '../utils/network_checker.dart';
+import 'home_screen.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,50 +12,51 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final LocalUserRepository _userRepository = LocalUserRepository();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
-  String? _error;
+  Future<void> _login() async {
+    if (!await NetworkChecker.isConnected()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Немає з\'єднання з Інтернетом')),
+      );
+      return;
+    }
 
-  void _login() async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
+    final email = emailController.text;
+    final password = passwordController.text;
 
-    final success = await _userRepository.login(email, password);
+    final success = await AuthService.login(email, password);
     if (success) {
-      if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        // ignore: inference_failure_on_instance_creation
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => HomeScreen(email: email)),
       );
     } else {
-      setState(() => _error = 'Invalid email or password');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Невірна пошта або пароль')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: const Text('Логін')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // ignore: lines_longer_than_80_chars
-            TextField(controller: _emailController, decoration: const InputDecoration(labelText: 'Email')),
-            // ignore: lines_longer_than_80_chars
-            TextField(controller: _passwordController, obscureText: true, decoration: const InputDecoration(labelText: 'Password')),
-            // ignore: lines_longer_than_80_chars
-            if (_error != null) Text(_error!, style: const TextStyle(color: Colors.red)),
-            const SizedBox(height: 16),
-            ElevatedButton(onPressed: _login, child: const Text('Login')),
+            TextField(controller: emailController, decoration: const InputDecoration(labelText: 'Email')),
+            TextField(controller: passwordController, obscureText: true, decoration: const InputDecoration(labelText: 'Пароль')),
+            const SizedBox(height: 20),
+            ElevatedButton(onPressed: _login, child: const Text('Увійти')),
             TextButton(
-              // ignore: inference_failure_on_instance_creation, lines_longer_than_80_chars
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen())),
-              child: const Text('Register'),
-            ),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen()));
+              },
+              child: const Text('Ще не маєш акаунту? Зареєструйся'),
+            )
           ],
         ),
       ),
