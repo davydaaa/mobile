@@ -1,27 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:lab_1/screens/home_screen.dart';
-import 'package:lab_1/screens/login_screen.dart';
-import 'package:lab_1/screens/profile_screen.dart';
-import 'package:lab_1/screens/register_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/home_screen.dart';
 
 class MyApp extends StatelessWidget {
   final bool isLoggedIn;
+  final String email;
 
-  const MyApp({required this.isLoggedIn, super.key});
+  const MyApp({super.key, required this.isLoggedIn, required this.email});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'IoT App',
       debugShowCheckedModeBanner: false,
-      title: 'Smart Home',
       theme: ThemeData(primarySwatch: Colors.blue),
-      initialRoute: isLoggedIn ? '/home' : '/login',
-      routes: {
-        '/login': (context) => const LoginScreen(),
-        '/register': (context) => const RegisterScreen(),
-        '/home': (context) => const HomeScreen(),
-        '/profile': (context) => const ProfileScreen(),
-      },
+      home: isLoggedIn ? HomeScreen(email: email) : const LoginScreen(),
     );
   }
 }
